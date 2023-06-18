@@ -40,7 +40,7 @@ def postusername(username:str,password:str,name:str):
     else:
         body= [name,username,password]
         worksheet.append_row(body)
-        return("SUCCESSFULLY CREATED USERNAME")
+        return("SUCCESSFULLY CREATED USER ACCOUNT")
     
 ### ENDPOINT TO UPDATE USERNAME ###
 @app.patch("/updateusername")
