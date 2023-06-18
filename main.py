@@ -35,7 +35,7 @@ def postusername(username:str,password:str,name:str):
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
-    if username in set(df['Username']) and password in set(df['Password']):
+    if username in set(df['Username']) or password in set(df['Password']):
         return("YOU ALREADY HAVE A USER CREATED")
     else:
         body= [name,username,password]
