@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse 
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 import pandas as pd
 import gspread
 
@@ -18,12 +18,13 @@ def getusername(username:str,password:str,name:str):
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
-    if username in set(df['Username']) and password in set(df['Password']):
+    cell = worksheet.find(username)
+    if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         return("User Authentication Successful")
-    elif username in set(df['Username']) and password not in set(df['Password']):
-        return ("You Have Entered The Wrong Password")
+    elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+        raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
-        return("Incorrect Credentials were entered")
+        raise HTTPException(status_code=400,detail="Incorrect Credentials were entered")
 
 #### ENDPOINT TO CREATE A USER ####
 @app.post("/createuser")
@@ -35,12 +36,12 @@ def postusername(username:str,password:str,name:str):
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
-    if username in set(df['Username']) or password in set(df['Password']):
-        return("YOU ALREADY HAVE A USER CREATED")
+    if username in set(df['Username']):
+        raise HTTPException(status_code=400,detail="YOU ALREADY HAVE A USER CREATED")
     else:
         body= [name,username,password]
         worksheet.append_row(body)
-        return("SUCCESSFULLY CREATED USER ACCOUNT")
+        return("SUCCESSFULLY CREATED USERNAME")
     
 ### ENDPOINT TO UPDATE USERNAME ###
 @app.patch("/updateusername")
@@ -52,14 +53,15 @@ def updateusername(currentusername:str,password:str,newusername:str):
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
-    if currentusername in set(df['Username']) and password in set(df['Password']):
+    cell = worksheet.find(currentusername)
+    if currentusername in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(currentusername)
         worksheet.update_cell(cell.row,cell.col,value=newusername)
         return("You Successfully Updated Your Username To: "+newusername)
-    elif currentusername in set(df['Username']) and password not in set(df['Password']):
-        return ("You Have Entered The Wrong Password")
+    elif currentusername in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+        raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
-        return("THE USERNAME DOES NOT EXIST")
+        raise HTTPException(status_code=400,detail="THE USERNAME DOES NOT EXIST")
 
 
 ### ENDPOINT TO UPDATE PASSWORD ####
@@ -72,14 +74,15 @@ def deleteuser(username:str,password:str,newpassword:str):
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
-    if username in set(df['Username']) and password in set(df['Password']):
+    cell = worksheet.find(username)
+    if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(password)
         worksheet.update_cell(cell.row,cell.col,value=newpassword)
         return("You Successfully Updated Your Password")
-    elif username in set(df['Username']) and password not in set(df['Password']):
-        return ("You Have Entered The Wrong Password")
+    elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+        raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
-        return("THE USERNAME DOES NOT EXIST")
+        raise HTTPException(status_code=400,detail="THE USERNAME DOES NOT EXIST")
 
 ### ENDPOINT TO DELETE USER ACCOUNT ###
 @app.delete("/deleteuser")
@@ -91,14 +94,15 @@ def postusername(username:str,password:str):
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
-    if username in set(df['Username']) and password in set(df['Password']):
+    cell = worksheet.find(username)
+    if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(username)
         worksheet.delete_row(cell.row)
         return("You Successfully Deleted Your Account")
-    elif username in set(df['Username']) and password not in set(df['Password']):
-        return ("You Have Entered The Wrong Password")
+    elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+        raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
-        return("THE USERNAME DOES NOT EXIST")
+        raise HTTPException(status_code=400,detail="THE USERNAME DOES NOT EXIST")
 
 
 
