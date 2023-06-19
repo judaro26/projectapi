@@ -26,7 +26,7 @@ app.add_middleware(
 
 ### ENDPOINT TO CONFIRM THAT USER EXISTS ####
 @app.post("/authentication")
-def getusername(username:str,password:strr):
+def getusername(username:str,password:str):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     SHEET_NAME='Username'
     gc = gspread.service_account('credentials.json')
