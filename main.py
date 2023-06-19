@@ -35,7 +35,7 @@ def getusername(username:str,password:str):
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
     cell = worksheet.find(username)
-    if username is not none and username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
+    if username is not None and username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         return("User Authentication Successful")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
