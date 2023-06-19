@@ -9,7 +9,7 @@ app=FastAPI()
 
 
 ### ENDPOINT TO CONFIRM THAT USER EXISTS ####
-@app.get("/authentication")
+@app.post("/authentication")
 def getusername(username:str,password:str,name:str):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     SHEET_NAME='Username'
