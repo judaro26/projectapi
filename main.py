@@ -36,7 +36,7 @@ def getusername(username:str,password:str):
     df=pd.DataFrame(rows)
     cell = worksheet.find(username)
     if username is not None and username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
-        return("User Authentication Successful")
+        raise HTTPException(status_code=200,detail="User Authentication Successful")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
@@ -57,7 +57,7 @@ def postusername(username:str,password:str,name:str):
     else:
         body= [name,username,password]
         worksheet.append_row(body)
-        return("SUCCESSFULLY CREATED USERNAME")
+        raise HTTPException(status_code=200,detail="SUCCESSFULLY CREATED USERNAME")
     
 ### ENDPOINT TO UPDATE USERNAME ###
 @app.patch("/updateusername")
@@ -73,7 +73,7 @@ def updateusername(currentusername:str,password:str,newusername:str):
     if currentusername in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(currentusername)
         worksheet.update_cell(cell.row,cell.col,value=newusername)
-        return("You Successfully Updated Your Username To: "+newusername)
+        raise HTTPException(status_code=200,detail="You Successfully Updated Your Username To: "+newusername)
     elif currentusername in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
@@ -94,7 +94,7 @@ def deleteuser(username:str,password:str,newpassword:str):
     if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(password)
         worksheet.update_cell(cell.row,cell.col,value=newpassword)
-        return("You Successfully Updated Your Password")
+        raise HTTPException(status_code=200,detail="You Successfully Updated Your Password")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
@@ -114,7 +114,7 @@ def postusername(username:str,password:str):
     if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(username)
         worksheet.delete_row(cell.row)
-        return("You Successfully Deleted Your Account")
+        raise HTTPException(status_code=200,detail="You Successfully Deleted Your Account")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
