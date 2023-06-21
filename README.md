@@ -4,4 +4,8 @@
 uvicorn main:app --reload
 
 
-# The api host for this should be: 
+# The real public api host for this should be: 
+https://api-project-8tdl.onrender.com
+
+# if you need to review the docs it should be:
+https://api-project-8tdl.onrender.com/docs
