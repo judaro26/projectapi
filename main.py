@@ -1,52 +1,53 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.responses import StreamingResponse
 import pandas as pd
 import gspread
-from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import orjson
 
+## Create request body ###
+class getuser(BaseModel):
+    user: list[str]
+    password: list[str]
+
+class creatuser(BaseModel):
+    user: list[str]
+    password: list[str]
+    name: list[str]
 
 
 app=FastAPI()
 
 
-origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 ### ENDPOINT TO CONFIRM THAT USER EXISTS ####
 @app.post("/authentication")
-def getusername(username:str,password:str):
+def getusername(payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     SHEET_NAME='Username'
+    username= payload['user']
+    password= payload['password']
     gc = gspread.service_account('credentials.json')
     spreadsheet=gc.open_by_key(SHEET_ID)
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
     cell = worksheet.find(username)
-    if username is not None and username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
-        raise HTTPException(status_code=200,detail="User Authentication Successful")
+    if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
+        return("User Authentication Successful")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
         raise HTTPException(status_code=400,detail="Incorrect Credentials were entered")
 
+
 #### ENDPOINT TO CREATE A USER ####
 @app.post("/createuser")
-def postusername(username:str,password:str,name:str):
+def postusername(credentials=creatuser,payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     SHEET_NAME='Username'
+    username= payload['user']
+    password= payload['password']   
+    name= payload['name']
     gc = gspread.service_account('credentials.json')
     spreadsheet=gc.open_by_key(SHEET_ID)
     worksheet=spreadsheet.worksheet(SHEET_NAME)
@@ -57,7 +58,7 @@ def postusername(username:str,password:str,name:str):
     else:
         body= [name,username,password]
         worksheet.append_row(body)
-        raise HTTPException(status_code=200,detail="SUCCESSFULLY CREATED USERNAME")
+        return("SUCCESSFULLY CREATED USERNAME")
     
 ### ENDPOINT TO UPDATE USERNAME ###
 @app.patch("/updateusername")
@@ -73,7 +74,7 @@ def updateusername(currentusername:str,password:str,newusername:str):
     if currentusername in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(currentusername)
         worksheet.update_cell(cell.row,cell.col,value=newusername)
-        raise HTTPException(status_code=200,detail="You Successfully Updated Your Username To: "+newusername)
+        return("You Successfully Updated Your Username To: "+newusername)
     elif currentusername in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
@@ -94,7 +95,7 @@ def deleteuser(username:str,password:str,newpassword:str):
     if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(password)
         worksheet.update_cell(cell.row,cell.col,value=newpassword)
-        raise HTTPException(status_code=200,detail="You Successfully Updated Your Password")
+        return("You Successfully Updated Your Password")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
@@ -114,7 +115,7 @@ def postusername(username:str,password:str):
     if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         cell = worksheet.find(username)
         worksheet.delete_row(cell.row)
-        raise HTTPException(status_code=200,detail="You Successfully Deleted Your Account")
+        return("You Successfully Deleted Your Account")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
     else:
