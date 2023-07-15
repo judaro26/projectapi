@@ -38,6 +38,7 @@ def getusername():
 def getusername():
     content ={"message": "OPTIONS CALL SUCCEEDED"}
     headers={'Access-Control-Allow-Origin': '*','Access-Control-Allow-Headers':'*', 'Access-Control-Max-Age':'86400'}
+    raise HTTPException(status_code=200)
 @app.patch("/authentication")
 def getusername():
     raise HTTPException(status_code=403,detail='PATCH IS NOT ALLOWED FOR "authentication" ENDPOINT')
