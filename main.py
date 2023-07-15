@@ -82,7 +82,7 @@ def postusername(payload: dict = Body(...)):
         rows=worksheet.get_all_records()    
         df=pd.DataFrame(rows)
         if username in set(df['Username']):
-            raise HTTPException(status_code=400,detail="YOU ALREADY HAVE A USER CREATED")
+            raise HTTPException(status_code=403,detail="YOU ALREADY HAVE A USER CREATED")
         else:
             body= [name,username,password]
             worksheet.append_row(body)
