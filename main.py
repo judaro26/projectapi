@@ -15,6 +15,11 @@ app=FastAPI()
 def getusername(payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     SHEET_NAME='Username'
+    try:
+        if payload['user']:
+            username= payload['user']
+    except:
+        raise HTTPException(status_code=400,detail="Incorrect Credentials were entered")        
     username= payload['user']
     password= payload['password']
     gc = gspread.service_account('credentials.json')
@@ -22,7 +27,7 @@ def getusername(payload: dict = Body(...)):
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     rows=worksheet.get_all_records()    
     df=pd.DataFrame(rows)
-    cell = worksheet.find(username)
+    cell = worksheet.find(username)        
     if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=200,detail="User Authentication Successful")
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
