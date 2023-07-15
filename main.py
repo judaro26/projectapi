@@ -24,19 +24,19 @@ def getusername(payload: dict = Body(...)):
     df=pd.DataFrame(rows)
     cell = worksheet.find(username)   
     try: 
-        if username not in set(df['Username']): 
+        if username not in set(df['Usuario']): 
             return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content=jsonable_encoder(
             {"detail": "Invalid request", "errors": "INCORRECT CREDENTIALS WERE USED"}))
     except:
         pass
-    if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
+    if username in set(df['Usuario']) and password in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=200,detail="User Authentication Successful")
-    elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+    elif username in set(df['Usuario']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         print('line 31')
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
-    elif username not in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+    elif username not in set(df['Usuario']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         print('line 34')
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Credentials")
 
@@ -88,12 +88,18 @@ def postusername(payload: dict = Body(...)):
         worksheet=spreadsheet.worksheet(SHEET_NAME)
         rows=worksheet.get_all_records()    
         df=pd.DataFrame(rows)
-        if username in set(df['Usuario']):
-            raise HTTPException(status_code=403,detail="YOU ALREADY HAVE A USER CREATED")
-        else:
+        try: 
+            if username in set(df['Usuario']): 
+                return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content=jsonable_encoder(
+                {"detail": "Invalid request", "errors": "YOU ALREADY HAVE A USER CREATED"}))
+        except:
+            pass            
+        if username not in set(df['Usuario']):
             body= [name,lastName,username,password,address,city,country,phone,documentId,documentType]
             worksheet.append_row(body)
-        return("SUCCESSFULLY CREATED USERNAME")
+            return("SUCCESSFULLY CREATED USERNAME")
     
 @app.head("/createuser")
 def updateusername():
