@@ -76,6 +76,12 @@ def postusername(payload: dict = Body(...)):
         username= payload['user']
         password= payload['password']   
         name= payload['name']
+        lastName=payload['lastName']
+        address=payload['address']
+        country=payload['country']
+        phone=payload['phone']
+        city=payload['city']
+        documentId=payload['documentId']
         gc = gspread.service_account('credentials.json')
         spreadsheet=gc.open_by_key(SHEET_ID)
         worksheet=spreadsheet.worksheet(SHEET_NAME)
@@ -84,7 +90,7 @@ def postusername(payload: dict = Body(...)):
         if username in set(df['Username']):
             raise HTTPException(status_code=403,detail="YOU ALREADY HAVE A USER CREATED")
         else:
-            body= [name,username,password]
+            body= [name,lastName,username,password,address,city,country,phone,documentId]
             worksheet.append_row(body)
         return("SUCCESSFULLY CREATED USERNAME")
     
