@@ -28,6 +28,8 @@ def getusername(payload: dict = Body(...)):
             raise HTTPException(status_code=200,detail="User Authentication Successful")
         elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
             raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
+        elif username not in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+            raise HTTPException(status_code=401,detail="You Have Entered The Wrong Credentials")
     except:
         raise HTTPException(status_code=400,detail="Incorrect Credentials were entered")
     
