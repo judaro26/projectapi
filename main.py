@@ -14,12 +14,7 @@ app=FastAPI()
 @app.post("/authentication")
 def getusername(payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
-    SHEET_NAME='Username'
-    try:
-        if payload['user']:
-            username= payload['user']
-    except:
-        raise HTTPException(status_code=400,detail="Incorrect Credentials were entered")        
+    SHEET_NAME='Username'   
     username= payload['user']
     password= payload['password']
     gc = gspread.service_account('credentials.json')
