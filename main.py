@@ -4,7 +4,6 @@ import pandas as pd
 import gspread
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from flask import Flask,redirect
 
 
 
@@ -34,8 +33,6 @@ def getusername(payload: dict = Body(...)):
         pass
     if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
         raise HTTPException(status_code=200,detail="User Authentication Successful")
-    if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
-        return redirect("http://www.google.com", code=302)
     elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
         print('line 31')
         raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
