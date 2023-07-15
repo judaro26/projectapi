@@ -97,7 +97,16 @@
                         'Referer':'*'
                       },
                       body:JSON.stringify(data)
-                    });
+                    }).then( async (response) => {
+                      // get json response here
+                      let responsecode = await response.json();
+                      if(response.status === 200){
+                        console.log(response.status)
+                        document.location.href="Pagina-de-usuarios.html" }
+                      else{
+                        console.log('this call is line 107')
+                        location.reload()}
+              })
               });
             </script>
           </div>
