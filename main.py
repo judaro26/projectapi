@@ -36,7 +36,8 @@ def getusername():
     raise HTTPException(status_code=403,detail='HEAD IS NOT ALLOWED FOR "authentication" ENDPOINT')
 @app.options("/authentication")
 def getusername():
-    raise HTTPException(status_code=403,detail='OPTIONS IS NOT ALLOWED FOR "authentication" ENDPOINT')
+    content ={"message": "OPTIONS CALL SUCCEEDED"}
+    headers={'Access-Control-Allow-Origin': '*','Access-Control-Allow-Headers':'*'}
 @app.patch("/authentication")
 def getusername():
     raise HTTPException(status_code=403,detail='PATCH IS NOT ALLOWED FOR "authentication" ENDPOINT')
