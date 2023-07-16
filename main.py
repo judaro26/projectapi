@@ -125,7 +125,7 @@ def updateusername():
 @app.patch("/updateusername")
 def updateusername(payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
-    SHEET_NAME='Username'
+    SHEET_NAME='Usuario'
     if ('user') not in payload:
         raise HTTPException(status_code=400,detail='YOU HAVE NOT ENTERED A USER')
     if ('password') not in payload:
@@ -142,11 +142,11 @@ def updateusername(payload: dict = Body(...)):
         rows=worksheet.get_all_records()    
         df=pd.DataFrame(rows)
         cell = worksheet.find(username)
-        if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
+        if username in set(df['Usuario']) and password in worksheet.cell(cell.row,cell.col +1).value:
             cell = worksheet.find(username)
             worksheet.update_cell(cell.row,cell.col,value=newuser)
             return("You Successfully Updated Your Username To: "+newuser)
-        elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+        elif username in set(df['Usuario']) and password not in worksheet.cell(cell.row,cell.col +1).value:
             raise HTTPException(status_code=401,detail="YOU HAVE ENTERED THE WRONG PASSWORD")
         else:
             raise HTTPException(status_code=400,detail="THE USERNAME DOES NOT EXIST")
@@ -178,7 +178,7 @@ def updateusername():
 @app.patch("/updatepassword")
 def updatepassword(payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
-    SHEET_NAME='Username'
+    SHEET_NAME='Usuario'
     if ('user') not in payload:
         raise HTTPException(status_code=400,detail='YOU HAVE NOT ENTERED A USER')
     if ('password') not in payload:
@@ -195,11 +195,11 @@ def updatepassword(payload: dict = Body(...)):
         rows=worksheet.get_all_records()    
         df=pd.DataFrame(rows)
         cell = worksheet.find(username)
-        if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
+        if username in set(df['Usuario']) and password in worksheet.cell(cell.row,cell.col +1).value:
             cell = worksheet.find(password)
             worksheet.update_cell(cell.row,cell.col,value=newpassword)
             return("You Successfully Updated Your Password")
-        elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+        elif username in set(df['Usuario']) and password not in worksheet.cell(cell.row,cell.col +1).value:
             raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
         else:
             raise HTTPException(status_code=400,detail="THE USERNAME DOES NOT EXIST")
@@ -246,11 +246,11 @@ def deleteuser(payload: dict = Body(...)):
         rows=worksheet.get_all_records()    
         df=pd.DataFrame(rows)
         cell = worksheet.find(username)
-        if username in set(df['Username']) and password in worksheet.cell(cell.row,cell.col +1).value:
+        if username in set(df['Usuario']) and password in worksheet.cell(cell.row,cell.col +1).value:
             cell = worksheet.find(username)
             worksheet.delete_row(cell.row)
             return("You Successfully Deleted Your Account")
-        elif username in set(df['Username']) and password not in worksheet.cell(cell.row,cell.col +1).value:
+        elif username in set(df['Usuario']) and password not in worksheet.cell(cell.row,cell.col +1).value:
             raise HTTPException(status_code=401,detail="You Have Entered The Wrong Password")
         else:
             raise HTTPException(status_code=400,detail="THE USERNAME DOES NOT EXIST")
