@@ -76,12 +76,11 @@ def deleteuser():
 
 ### FUNCTION TO UPDATE USER ACCOUNTS ###       
 @app.patch("/accountmanagement")
-def patchuser(targetpassword:str| None=None,targetName:str| None=None, newUser:str|None=None, payload: dict = Body(...)):
+def patchuser(payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     TOUPDATESHEET_NAME="Username"
     SHEET_NAME='Management User DB'
     ### CREATE PARAM INDEX ####
-    targetdata=[targetpassword,targetName,newUser]
     ### CREATE CONDITIONS FOR ADMIN USER VALIDATION ###
     if ('user') not in payload:
         raise HTTPException(status_code=400,detail='YOU HAVE NOT ENTERED AN ADMIN USER')
@@ -93,29 +92,26 @@ def patchuser(targetpassword:str| None=None,targetName:str| None=None, newUser:s
         raise HTTPException(status_code=400,detail="YOU HAVE NOT ENTERED A 'canupdate' OBJECT IN YOUR PAYLOAD")  
     ### CREATE CONDITIONS FOR ADMIN TO CONFIRM IF PAYLOAD CONTAINS THE SPECIFIC VALUES IN THE PAYLOAD AND PARAMS ###
     try:
-        if len(targetdata[1])>0 and payload['targetUser']!=None and payload['targetName']!=None:
-                if payload['targetName']==None and targetdata[1]!=None:
+                if payload['targetName']==None:
                     return("YOU ARE MISSING THE 'targetName' BODY OBJECT")
-                elif payload['targetName']!=None and targetdata[1]!=None:
+                elif payload['targetName']!=None:
                     bodyName=payload['targetName']
     except:
         print('line 170')
         pass
     try:     
-        if len(targetdata[0])>0 and payload['targetUser']!=None and payload['targetPassword']!=None:
-                    if payload['targetPassword']==None and targetdata[0]!=None:
+                    if payload['targetPassword']==None:
                         return("YOU ARE MISSING THE 'targetPassword' BODY OBJECT")
-                    elif payload['targetPassword']!=None and targetdata[0]!=None:
+                    elif payload['targetPassword']!=None:
                         passwordBody=payload['targetPassword']
     except:
         print('line 178')
         pass 
     try:    
-        if len(targetdata[2])>0 and payload['targetUser']!=None:
                 if bodyUser==payload['newUser']:
-                    if bodyUser==None and targetdata[2]!=None:
+                    if bodyUser==None:
                         return("YOU ARE MISSING THE 'newUser' BODY OBJECT")
-                    elif bodyUser!=None and targetdata[2]!=None:
+                    elif bodyUser!=None:
                         bodyUser=payload['newUser']
     except:
             print('line 189')
