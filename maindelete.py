@@ -112,7 +112,7 @@ def deleteuser():
 
 ### FUNCTION TO UPDATE USER ACCOUNTS ###       
 @app.patch("/accountmanagement")
-def patchuser(targetpassword:str| None=None,targetName:str| None=None, newUser:str|None=None, payload: dict = Body(...)):
+def patchuser(targetpassword:str,targetName:str, newUser:str, payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     TOUPDATESHEET_NAME="Username"
     SHEET_NAME='Management User DB'
