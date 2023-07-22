@@ -9,6 +9,42 @@ import gspread
 app=FastAPI()
 
 
+### FUNCTION TO ALLOW USERS TO LOGINTO ADMIN ###
+@app.post("/access")
+def postaccess(payload:dict=Body(...)):
+    SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
+    SHEET_NAME='Management User DB'
+    if ('user') not in payload:
+        raise HTTPException(status_code=400,detail='YOU HAVE NOT ENTERED AN ADMIN USER')
+    if ('password') not in payload:
+        raise HTTPException(status_code=400,detail='YOU HAVE NOT ENTERED AN ADMIN PASSWORD') 
+    gc = gspread.service_account('credentials.json')
+    spreadsheet=gc.open_by_key(SHEET_ID)
+    worksheet=spreadsheet.worksheet(SHEET_NAME)
+    ### CREATING VARIABLES FOR TARGET USER VALUES FOUND IN THE SPREADSHEETS ###   
+    username= payload['user']  
+    password=payload['password']                   
+    usercell=worksheet.find(username)
+    usernamevalue= worksheet.cell(usercell.row,usercell.col).value
+    passwordvalue=worksheet.cell(usercell.row,usercell.col+1).value
+    if username in usernamevalue and password in passwordvalue:
+        raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
+    else:
+        raise HTTPException(status_code=401,detail='YOURE CREDENTIALS ARE INCORRECT')
+@app.head("/access")
+def deleteuser():
+    raise HTTPException(status_code=403,detail='HEAD IS NOT ALLOWED FOR "access" ENDPOINT')
+@app.options("/access")
+def deleteuser():
+    raise HTTPException(status_code=403,detail='OPTIONS IS NOT ALLOWED FOR "access" ENDPOINT')
+@app.put("/access")
+def deleteuser():
+    raise HTTPException(status_code=403,detail='PUT IS NOT ALLOWED FOR "access" ENDPOINT')
+@app.get("/access")
+def deleteuser():
+    raise HTTPException(status_code=200,detail='SUCCESS')
+
+
 ### ENDPOINT TO DELETE USER ACCOUNTs ###
 @app.delete("/accountmanagement")
 def deleteuser(payload: dict = Body(...)):
@@ -76,11 +112,12 @@ def deleteuser():
 
 ### FUNCTION TO UPDATE USER ACCOUNTS ###       
 @app.patch("/accountmanagement")
-def patchuser(payload: dict = Body(...)):
+def patchuser(targetpassword:str| None=None,targetName:str| None=None, newUser:str|None=None, payload: dict = Body(...)):
     SHEET_ID='1XyE3KPBlM4AIqFHEUYkmyLxKvun6RnUFg92BeQMz4M0'
     TOUPDATESHEET_NAME="Username"
     SHEET_NAME='Management User DB'
     ### CREATE PARAM INDEX ####
+    targetdata=[targetpassword,targetName,newUser]
     ### CREATE CONDITIONS FOR ADMIN USER VALIDATION ###
     if ('user') not in payload:
         raise HTTPException(status_code=400,detail='YOU HAVE NOT ENTERED AN ADMIN USER')
@@ -92,26 +129,29 @@ def patchuser(payload: dict = Body(...)):
         raise HTTPException(status_code=400,detail="YOU HAVE NOT ENTERED A 'canupdate' OBJECT IN YOUR PAYLOAD")  
     ### CREATE CONDITIONS FOR ADMIN TO CONFIRM IF PAYLOAD CONTAINS THE SPECIFIC VALUES IN THE PAYLOAD AND PARAMS ###
     try:
-                if payload['targetName']==None:
+        if len(targetdata[1])>0 and payload['targetUser']!=None and payload['targetName']!=None:
+                if payload['targetName']==None and targetdata[1]!=None:
                     return("YOU ARE MISSING THE 'targetName' BODY OBJECT")
-                elif payload['targetName']!=None:
+                elif payload['targetName']!=None and targetdata[1]!=None:
                     bodyName=payload['targetName']
     except:
         print('line 170')
         pass
     try:     
-                    if payload['targetPassword']==None:
+        if len(targetdata[0])>0 and payload['targetUser']!=None and payload['targetPassword']!=None:
+                    if payload['targetPassword']==None and targetdata[0]!=None:
                         return("YOU ARE MISSING THE 'targetPassword' BODY OBJECT")
-                    elif payload['targetPassword']!=None:
+                    elif payload['targetPassword']!=None and targetdata[0]!=None:
                         passwordBody=payload['targetPassword']
     except:
         print('line 178')
         pass 
     try:    
+        if len(targetdata[2])>0 and payload['targetUser']!=None:
                 if bodyUser==payload['newUser']:
-                    if bodyUser==None:
+                    if bodyUser==None and targetdata[2]!=None:
                         return("YOU ARE MISSING THE 'newUser' BODY OBJECT")
-                    elif bodyUser!=None:
+                    elif bodyUser!=None and targetdata[2]!=None:
                         bodyUser=payload['newUser']
     except:
             print('line 189')
