@@ -27,14 +27,19 @@ def postaccess(payload:dict=Body(...)):
     try:                   
         if worksheet.find(username)==None:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
-        if (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value)==None:
-            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
-        if payload['user'] in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value:
-            raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
-        else:
-            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
     except:
         pass
+    try:    
+        if (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value)==None:
+            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
+    except:
+        pass   
+    try:    
+        if payload['user'] in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value:
+            raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')    
+    except:
+            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
+
 @app.head("/access")
 def deleteuser():
     raise HTTPException(status_code=403,detail='HEAD IS NOT ALLOWED FOR "access" ENDPOINT')
