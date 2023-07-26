@@ -22,17 +22,19 @@ def postaccess(payload:dict=Body(...)):
     spreadsheet=gc.open_by_key(SHEET_ID)
     worksheet=spreadsheet.worksheet(SHEET_NAME)
     ### CREATING VARIABLES FOR TARGET USER VALUES FOUND IN THE SPREADSHEETS ###   
-    username= payload['user']  
-    password=payload['password']                   
-    if worksheet.find(username)==None:
-        raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
-    if (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value)==None:
-        raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
-    if payload['user'] in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value:
-        raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
-    else:
-        raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
-
+    username= payload['user']
+    password=payload['password']
+    try:                   
+        if worksheet.find(username)==None:
+            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
+        if (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value)==None:
+            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
+        if payload['user'] in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value:
+            raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
+        else:
+            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
+    except:
+        pass
 @app.head("/access")
 def deleteuser():
     raise HTTPException(status_code=403,detail='HEAD IS NOT ALLOWED FOR "access" ENDPOINT')
