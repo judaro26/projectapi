@@ -26,16 +26,17 @@ def postaccess(payload:dict=Body(...)):
     password=payload['password']                   
     usercell=worksheet.find(username)
     try:
-        if len(worksheet.cell(usercell.row,usercell.col).value)==0:
-            raise (HTTPException(status_code=401,detail="YOU ARE NOT INCLUDING A 'targetUser' IN YOUR PAYLOAD"))
+        if len(worksheet.cell(usercell.row,usercell.col).value)==None:
+            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
+        else:
+            usernamevalue= worksheet.cell(usercell.row,usercell.col).value
+            passwordvalue=worksheet.cell(usercell.row,usercell.col+1).value
+            if username in usernamevalue and password in passwordvalue:
+                raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
+            else:
+                raise HTTPException(status_code=401,detail='YOURE CREDENTIALS ARE INCORRECT')
     except:
         pass
-    usernamevalue= worksheet.cell(usercell.row,usercell.col).value
-    passwordvalue=worksheet.cell(usercell.row,usercell.col+1).value
-    if username in usernamevalue and password in passwordvalue:
-        raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
-    else:
-        raise HTTPException(status_code=401,detail='YOURE CREDENTIALS ARE INCORRECT')
 @app.head("/access")
 def deleteuser():
     raise HTTPException(status_code=403,detail='HEAD IS NOT ALLOWED FOR "access" ENDPOINT')
