@@ -28,22 +28,25 @@ def postaccess(payload:dict=Body(...)):
         if worksheet.find(username)==None:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
     except:
-        pass
+        return('line 31')
     try:    
-        if (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value)==None:
+        usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value
+        if usernamecell==None:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
     except:
-        pass   
+        return('line 36')   
     try:    
-        if username in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password in (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value):
+        usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value
+        passwordcell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value
+        if username in usernamecell and password in passwordcell:
             raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')    
     except:
             raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
     try: 
-        if username in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password not in (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value):
+        if username in usernamecell and password not in passwordcell:
             raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
     except:
-        pass
+        return('line48')
 
 @app.head("/access")
 def deleteuser():
