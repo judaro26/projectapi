@@ -25,13 +25,13 @@ def postaccess(payload:dict=Body(...)):
     username= payload['user']
     password=payload['password']
     try:                   
-        if worksheet.find(username)==None:
+        if len(worksheet.find(username))==0:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
     except:
         return('line 31')
     try:    
         usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value
-        if usernamecell==None:
+        if len(usernamecell)==0:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
     except:
         return('line 36')   
