@@ -24,29 +24,19 @@ def postaccess(payload:dict=Body(...)):
     ### CREATING VARIABLES FOR TARGET USER VALUES FOUND IN THE SPREADSHEETS ###   
     username= payload['user']
     password=payload['password']
-    try:                   
-        if len(worksheet.find(username))==0:
+    try:
+        usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value 
+        passwordcell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value                  
+        if worksheet.find(username)==None:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
-    except:
-        return(str(len(worksheet.find(username))))
-    try:    
-        usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value
-        if len(usernamecell)==0:
-            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
-    except:
-        return(str(len(usernamecell)))   
-    try:    
-        usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value
-        passwordcell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value
+        elif usernamecell==None:
+            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))  
         if username in usernamecell and password in passwordcell:
             raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')    
-    except:
-            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
-    try: 
-        if username in usernamecell and password not in passwordcell:
+        elif username in usernamecell and password not in passwordcell:
             raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
     except:
-        return('line48')
+            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
 
 @app.head("/access")
 def deleteuser():
