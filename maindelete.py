@@ -25,13 +25,13 @@ def postaccess(payload:dict=Body(...)):
     username= payload['user']  
     password=payload['password']                   
     usercell=worksheet.find(username)
-    usernamevalue= worksheet.cell(usercell.row,usercell.col).value
-    passwordvalue=worksheet.cell(usercell.row,usercell.col+1).value
     try:
-        if len(usercell)==0:
-            raise (HTTPException(status_code=400,detail="YOU ARE NOT INCLUDING A 'targetUser' IN YOUR PAYLOAD"))
+        if len(worksheet.cell(usercell.row,usercell.col).value)==0:
+            raise (HTTPException(status_code=401,detail="YOU ARE NOT INCLUDING A 'targetUser' IN YOUR PAYLOAD"))
     except:
         pass
+    usernamevalue= worksheet.cell(usercell.row,usercell.col).value
+    passwordvalue=worksheet.cell(usercell.row,usercell.col+1).value
     if username in usernamevalue and password in passwordvalue:
         raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
     else:
