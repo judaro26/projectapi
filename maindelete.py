@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException, Body,Request
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, HTTPException, Body,Request,status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 import pandas as pd
 import gspread
 
@@ -26,17 +28,30 @@ def postaccess(payload:dict=Body(...)):
     password=payload['password']
     try:
         usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value 
-        passwordcell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value                  
+        passwordcell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value     
+    except:
+        return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
+        content=jsonable_encoder({"detail": "UNABLE TO FIND USERNAME"}),
+    )   
+    try:
         if worksheet.find(username)==None:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
         elif usernamecell==None:
-            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))  
-        if username in usernamecell and password in passwordcell:
-            raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')    
-        elif username in usernamecell and password not in passwordcell:
-            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
+            raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))   
     except:
-            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
+            pass
+    try:
+        usernamecell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value 
+        passwordcell=worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value    
+    except:
+        return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
+        content=jsonable_encoder({"detail": "SOMETHING WENT WRONG"}),
+    )   
+    if username in usernamecell and password in passwordcell:
+        raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')  
+    elif username in usernamecell and password not in passwordcell:
+        print('line 35')
+        raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
 
 @app.head("/access")
 def deleteuser():
