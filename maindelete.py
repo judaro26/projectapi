@@ -35,10 +35,15 @@ def postaccess(payload:dict=Body(...)):
     except:
         pass   
     try:    
-        if payload['user'] in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value:
+        if username in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password in (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value):
             raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')    
     except:
             raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
+    try: 
+        if username in worksheet.cell(worksheet.find(username).row,worksheet.find(username).col).value and password not in (worksheet.cell(worksheet.find(username).row,worksheet.find(username).col+1).value):
+            raise HTTPException(status_code=401,detail='YOUR CREDENTIALS ARE INCORRECT')
+    except:
+        pass
 
 @app.head("/access")
 def deleteuser():
