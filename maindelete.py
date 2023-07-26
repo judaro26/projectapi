@@ -28,13 +28,10 @@ def postaccess(payload:dict=Body(...)):
     try:
         if len(worksheet.cell(usercell.row,usercell.col).value)==None:
             raise (HTTPException(status_code=401,detail="THERE IS AN ISSUE WITH THE USERNAME"))
+        if payload['user'] in worksheet.cell(usercell.row,usercell.col).value and password in worksheet.cell(usercell.row,usercell.col+1).value:
+            raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
         else:
-            usernamevalue= worksheet.cell(usercell.row,usercell.col).value
-            passwordvalue=worksheet.cell(usercell.row,usercell.col+1).value
-            if username in usernamevalue and password in passwordvalue:
-                raise HTTPException(status_code=200,detail='SUCCESSFUL ENTRY')
-            else:
-                raise HTTPException(status_code=401,detail='YOURE CREDENTIALS ARE INCORRECT')
+            raise HTTPException(status_code=401,detail='YOURE CREDENTIALS ARE INCORRECT')
     except:
         pass
 @app.head("/access")
